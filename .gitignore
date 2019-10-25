@@ -23,3 +23,5 @@ npm-debug.log
 .nyc_output
 /test/npm_cache*
 /node_modules/.cache
+/cache
+/tmp
