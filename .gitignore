@@ -24,6 +24,7 @@ npm-debug.log
 .nyc_output
 /test/npm_cache*
 /node_modules/.cache
+**/package-lock.json
 **/cache
 **/node_modules
 **/tmp
