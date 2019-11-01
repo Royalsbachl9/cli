@@ -139,5 +139,21 @@ module.exports = [
         return measureAction({ cmd, args, env, cwd })
       }
     ]
+  },
+  {
+    name: 'benchmark cleanup',
+    details: {
+      cache: true,
+      node_modules: true,
+      lockfile: true
+    },
+    cmd: 'noop',
+    args: [],
+    actions: [
+      removeCache,
+      removeNodeModules,
+      removeLockfile,
+      (ctx, fixture) => 0
+    ]
   }
 ]
