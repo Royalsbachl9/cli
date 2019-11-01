@@ -86,7 +86,7 @@ async function measureAction ({ cmd, args, env, cwd }) {
  */
 module.exports = [
   {
-    name: 'fresh install',
+    name: 'Initial install',
     details: {
       cache: false,
       node_modules: false,
@@ -115,7 +115,7 @@ module.exports = [
     ]
   },
   {
-    name: 'repeat install',
+    name: 'Repeat install',
     details: {
       cache: true,
       node_modules: true,
@@ -141,12 +141,173 @@ module.exports = [
     ]
   },
   {
-    name: 'benchmark cleanup',
+    name: 'With warm cache',
+    details: {
+      cache: true,
+      node_modules: false,
+      lockfile: false
+    },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeNodeModules,
+      removeLockfile,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'With node_modules',
+    details: {
+      cache: false,
+      node_modules: true,
+      lockfile: false
+    },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeCache,
+      removeLockfile,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'With lockfile',
+    details: {
+      cache: false,
+      node_modules: false,
+      lockfile: true
+    },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeCache,
+      removeNodeModules,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'With warm cache and node_modules',
     details: {
       cache: true,
       node_modules: true,
+      lockfile: false
+    },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeLockfile,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'With warm cache and lockfile',
+    details: {
+      cache: true,
+      node_modules: false,
       lockfile: true
     },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeNodeModules,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'With node_modules and lockfile',
+    details: {
+      cache: false,
+      node_modules: true,
+      lockfile: true
+    },
+    cmd: 'npm',
+    args: [
+      'install',
+      '--ignore-scripts',
+      '--cache',
+      `${CACHE_NAME}`,
+      '--registry',
+      'https://registry.npmjs.org/'
+    ],
+    actions: [
+      removeCache,
+      (ctx, fixture) => {
+        const { cmd, args } = ctx
+        const env = createEnv()
+
+        const cwd = join(FIXTURES_DIR, fixture)
+        return measureAction({ cmd, args, env, cwd })
+      }
+    ]
+  },
+  {
+    name: 'benchmark cleanup',
+    details: {},
     cmd: 'noop',
     args: [],
     actions: [
