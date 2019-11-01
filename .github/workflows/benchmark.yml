@@ -32,6 +32,14 @@ jobs:
       - name: Globally link npm/cli
         run: node bin/npm-cli.js link -f
 
+      # Validate npm/cli is current commit
+      - name: Validate link npm/cli (1)
+        run: npm ls -g --depth=0 || exit 0
+
+      # Validate npm/cli is current commit
+      - name: Validate link npm/cli (2)
+        run: ls -l $(which npm)
+
       # Run benchmark suite
       - name: Run benchmarking
         run: npm run benchmark
