@@ -33,12 +33,18 @@ jobs:
         run: node bin/npm-cli.js link -f
 
       # Validate npm/cli is current commit
-      - name: Validate link npm/cli (1)
-        run: npm ls -g --depth=0 || exit 0
-
-      # Validate npm/cli is current commit
-      - name: Validate link npm/cli (2)
-        run: ls -l $(which npm)
+      - name: Validate link npm/cli
+        run: |
+          echo "Global npm Packages:"
+          npm ls -g --depth=0 || exit 0
+          echo "Command Path:"
+          which npm
+          echo "Global node_modules:"
+          ls -l "$(dirname $(which npm))/../lib/node_modules"
+          echo "Current Working Directory:"
+          pwd
+          echo "Current Commit:"
+          git log --oneline -1
 
       # Run benchmark suite
       - name: Run benchmarking
