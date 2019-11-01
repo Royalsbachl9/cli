@@ -18,10 +18,12 @@ npm-debug.log
 /test/fixtures/config/userconfig-with-gc
 /node_modules/npm-registry-couchapp
 *.pyc
+.DS_Store
 .jshintrc
 .eslintrc
 .nyc_output
 /test/npm_cache*
 /node_modules/.cache
-/cache
-/tmp
+**/cache
+**/node_modules
+**/tmp
