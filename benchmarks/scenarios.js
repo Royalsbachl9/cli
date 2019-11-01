@@ -68,7 +68,8 @@ async function measureAction ({ cmd, args, env, cwd }) {
   const startTime = Date.now()
   // const delay = (ms, value) => new Promise(resolve => setTimeout(() => resolve(value), ms))
   // await delay(1000)
-  const result = child.spawnSync(cmd, args, { env, cwd, stdio: 'inherit' })
+  // TODO: allow config to be passed in to allow process output 'stdio'
+  const result = child.spawnSync(cmd, args, { env, cwd })
   if (result.status !== 0) {
     console.error(result.error)
     throw new Error(`${cmd} failed with status code ${result.status}`)
