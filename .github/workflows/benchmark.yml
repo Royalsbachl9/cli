@@ -1,0 +1,37 @@
+---
+name: Benchmark Suite
+
+on: [push]
+
+jobs:
+  build:
+    name: Benchmark npm/cli
+
+    strategy:
+      matric:
+        os: [ubuntu-latest, macOS-latest]
+        node-version: [10.x, 12.x]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Checkout the npm/cli repo
+      - uses: actions/checkout@v1
+
+      # Installs the specific version of nodejs
+      - name: Use nodejs ${{ matrix.node-version}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Uninstall global npm
+      - name: Unlink npm/cli
+        run: node bin/npm-cli.js rm npm -g -f
+
+      # Link npm/cli
+      - name: Globally link npm/cli
+        run: node bin/npm-cli.js link -f
+
+      # Run benchmark suite
+      - name: Run benchmarking
+        run: npm run benchmark
