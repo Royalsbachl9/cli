@@ -37,7 +37,7 @@ async function removePath (path) {
 
 async function removeCache (ctx, fixture) {
   log.verbose('removeCache', 'removing cache...')
-  const cacheDir = join(FIXTURES_DIR, CACHE_NAME)
+  const cacheDir = join(FIXTURES_DIR, fixture, CACHE_NAME)
   log.silly('removeCache', 'cacheDir: %s', cacheDir)
   return removePath(cacheDir)
 }
