@@ -1,8 +1,9 @@
 'use strict'
 
 // const { join } = require('path')
-const log = require('npmlog')
 const fs = require('fs')
+
+const { log } = require('./utils')
 
 // Constant Variables
 const { FIXTURES_DIR } = require('./constants')
@@ -37,11 +38,9 @@ async function executeScenario (scenario, fixture) {
     },
     Promise.resolve()
   )
-  log.info('Result Time:', result)
-  log.info('Details:', scenario.details)
+  log.info('execute', 'Result Time: %d', result)
+  log.info('execute', 'Details: %o', scenario.details)
 }
-
-const logger = log.newGroup('execute')
 
 async function execute () {
   // Execute scenarios
@@ -51,15 +50,14 @@ async function execute () {
   try {
     for (let x = 0; x < scenarios.length; ++x) {
       const scenario = scenarios[x]
-      logger.info('benchmark', 'Scenario: %s', scenario.name)
-      // console.group('Scenario:', scenario.name) // TESTING
+
+      log.info('scenario', scenario.name)
       for (let i = 0; i < fixtures.length; ++i) {
         const fixture = fixtures[i]
-        console.group('Fixture:', fixture) // TESTING
+
+        log.info('fixture', fixture)
         await executeScenario(scenario, fixture)
-        console.groupEnd('Fixture End')
       }
-      console.groupEnd('Scenario End') // TESTING
     }
   } catch (e) {
     log.error(e)

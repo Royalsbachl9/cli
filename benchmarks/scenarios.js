@@ -2,8 +2,9 @@
 
 const child = require('child_process')
 const rimraf = require('rimraf')
-const log = require('npmlog')
 const { join } = require('path')
+
+const { log } = require('./utils')
 
 const {
   CACHE_NAME,
@@ -12,7 +13,6 @@ const {
 
 // Helper Functions
 function createEnv (overrides = {}) {
-  console.group('createEnv') // TESTING
   const env = Object.keys(process.env).reduce((acc, key) => {
     return (key.match(/^npm_/))
       // Don't include `npm_` key/values
@@ -20,8 +20,7 @@ function createEnv (overrides = {}) {
       // Add key/value to env object
       : Object.assign({}, acc, { [key]: process.env[key] })
   }, {})
-  // log.silly('env:', env) // TESTING
-  console.groupEnd('createEnv end') // TESTING
+  log.silly('createEnv', 'env: %o', env)
   return Object.assign({}, env, overrides)
 }
 
@@ -37,41 +36,35 @@ async function removePath (path) {
 }
 
 async function removeCache (ctx, fixture) {
+  log.verbose('removeCache', 'removing cache...')
   const cacheDir = join(FIXTURES_DIR, CACHE_NAME)
-  console.group('removeCache') // TESTING
-  log.silly('cacheDir:', cacheDir) // TESTING
-  console.groupEnd('removeCache end') // TESTING
-  // return Promise.resolve()
+  log.silly('removeCache', 'cacheDir: %s', cacheDir)
   return removePath(cacheDir)
 }
 
 async function removeNodeModules (ctx, fixture) {
+  log.verbose('removeNodeModules', 'removing node_modules...')
   const cwd = join(FIXTURES_DIR, fixture)
   const nodeModulesDir = join(cwd, 'node_modules')
-  console.group('removeNodeModules') // TESTING
-  log.silly('nodeModulesDir:', nodeModulesDir) // TESTING
-  console.groupEnd('removeNodeModules end') // TESTING
-  // return Promise.resolve()
+  log.silly('removeNodeModules', 'nodeModulesDir: %s', nodeModulesDir)
   return removePath(nodeModulesDir)
 }
 
 async function removeLockfile (ctx, fixture) {
+  log.verbose('removeLockfile', 'removing lockfile...')
   // TODO: change this to use `scenario.lockfile`
   const cwd = join(FIXTURES_DIR, fixture)
   const lockfilePath = join(cwd, 'package-lock.json')
-  console.group('removeLockfile') // TESTING
-  log.silly('lockfilePath:', lockfilePath) // TESTING
-  console.groupEnd('removeLockfile end') // TESTING
-  // return Promise.resolve()
+  log.silly('removeLockfile', 'lockfilePath: %s', lockfilePath)
   return removePath(lockfilePath)
 }
 
 async function measureAction ({ cmd, args, env, cwd }) {
-  log.silly('executing...') // TESTING
-  log.silly('cmd:', cmd) // TESTING
-  log.silly('args:', args) // TESTING
-  log.silly('env:', env) // TESTING
-  log.silly('cwd:', cwd) // TESTING
+  log.verbose('measureAction', 'executing...')
+  log.silly('measureAction', 'cmd: %s', cmd) // TESTING
+  log.silly('measureAction', 'args: %o', args) // TESTING
+  log.silly('measureAction', 'env: %o', env) // TESTING
+  log.silly('measureAction', 'cwd: %s', cwd) // TESTING
   const startTime = Date.now()
   // const delay = (ms, value) => new Promise(resolve => setTimeout(() => resolve(value), ms))
   // await delay(1000)
@@ -81,7 +74,6 @@ async function measureAction ({ cmd, args, env, cwd }) {
     throw new Error(`${cmd} failed with status code ${result.status}`)
   }
   const endTime = Date.now()
-  console.groupEnd('Instance Action End')
   return endTime - startTime
 }
 
@@ -117,7 +109,6 @@ module.exports = [
         const env = createEnv()
 
         const cwd = join(FIXTURES_DIR, fixture)
-        console.group('Instance Action') // TESTING
         return measureAction({ cmd, args, env, cwd })
       }
     ]
