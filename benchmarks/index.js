@@ -1,26 +1,11 @@
 'use strict'
 
-const { join } = require('path')
-const child = require('child_process')
+// const { join } = require('path')
+const log = require('npmlog')
+const fs = require('fs')
 
 // Constant Variables
-const BASE_DIR = join(__dirname, '..')
-const BENCHMARK_DIR = join(BASE_DIR, 'benchmarks')
-const FIXTURES_DIR = join(BENCHMARK_DIR, 'fixtures')
-const TMP_DIR = join(BASE_DIR, 'tmp')
-
-// Helper Functions
-const pathKey = (options = {}) => {
-  const environment = options.env || process.env
-  const platform = options.platform || process.platform
-
-  if (platform !== 'win32') {
-    return 'PATH'
-  }
-
-  return Object.keys(environment)
-    .find(key => key.toUpperCase() === 'PATH') || 'Path'
-}
+const { FIXTURES_DIR } = require('./constants')
 
 /**
  * // Scenario Object
@@ -37,38 +22,47 @@ const pathKey = (options = {}) => {
 //   await copy(path.join(FIXTURES_DIR, fixture), cwd)
 // }
 
-// async function executeScenario (scenario) {}
+/**
+ * Executes a given scenario with a provided fixture
+ *
+ * @param {object} scenario scenario object
+ * @param {string} fixture directory name of a fixture
+ */
+async function executeScenario (scenario, fixture) {
+  const { actions } = scenario
+
+  const result = await actions.reduce(
+    (acc, action) => {
+      return acc.then((result) => action(scenario, fixture))
+    },
+    Promise.resolve()
+  )
+  log.info('Result Time:', result)
+  log.info('Details:', scenario.details)
+}
+
+const logger = log.newGroup('execute')
 
 async function execute () {
   // Execute scenarios
   const scenarios = require('./scenarios')
-  // console.log('scenarios:', scenarios) // TESTING
-  console.log('BASE_DIR:', BASE_DIR) // TESTING
-  console.log('BENCHMARK_DIR:', BENCHMARK_DIR) // TESTING
-  console.log('FIXTURE_DIR:', FIXTURES_DIR) // TESTING
-  console.log('TMP_DIR:', TMP_DIR) // TESTING
+  const fixtures = fs.readdirSync(FIXTURES_DIR, 'utf-8')
 
   try {
     for (let x = 0; x < scenarios.length; ++x) {
       const scenario = scenarios[x]
-
-      // TODO: put this in `executeScenario`?
-      const { actions } = scenario
-      // console.log('actions:', actions) // TESTING
-
-      const cwd = ''
-
-      const result = await actions.reduce(
-        (acc, action) => {
-          return acc.then((result) => action(cwd, scenario))
-        },
-        Promise.resolve()
-      )
-      console.log('Scenario:', scenario.name)
-      console.log('Result Time:', result)
+      logger.info('benchmark', 'Scenario: %s', scenario.name)
+      // console.group('Scenario:', scenario.name) // TESTING
+      for (let i = 0; i < fixtures.length; ++i) {
+        const fixture = fixtures[i]
+        console.group('Fixture:', fixture) // TESTING
+        await executeScenario(scenario, fixture)
+        console.groupEnd('Fixture End')
+      }
+      console.groupEnd('Scenario End') // TESTING
     }
   } catch (e) {
-    console.log(e)
+    log.error(e)
   }
 }
 
