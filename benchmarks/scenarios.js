@@ -306,7 +306,7 @@ module.exports = [
     ]
   },
   {
-    name: 'benchmark cleanup',
+    name: 'cleanup',
     details: {},
     cmd: 'noop',
     args: [],
