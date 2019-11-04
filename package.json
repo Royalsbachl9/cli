@@ -291,8 +291,8 @@
   },
   "scripts": {
     "dumpconf": "env | grep npm | sort | uniq",
-    "prepare": "node bin/npm-cli.js rebuild && node bin/npm-cli.js --no-audit --no-timing prune --prefix=. --no-global && rimraf test/*/*/node_modules",
-    "prepublishOnly": "make -j4 docs",
+    "prepare": "node bin/npm-cli.js rebuild && node bin/npm-cli.js --no-audit --no-timing prune --prefix=. --no-global && rimraf test/*/*/node_modules && make -j4 mandocs",
+    "prepublishOnly": "make -j4 htmldocs",
     "preversion": "bash scripts/update-authors.sh && git add AUTHORS && git commit -m \"update AUTHORS\" || true",
     "licenses": "licensee --production --errors-only",
     "tap": "tap -J --timeout 300 --no-esm",

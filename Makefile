@@ -46,6 +46,8 @@ clean: markedclean marked-manclean docs-clean
 uninstall:
 	node bin/npm-cli.js rm npm -g -f
 
+mandocs: $(mandocs)
+
 htmldocs:
 	cd docs && node ../bin/npm-cli.js install && \
 	node ../bin/npm-cli.js run build:static echo>&2 && \
@@ -53,7 +55,7 @@ htmldocs:
 	find docs/public -name '*.html' -exec \
 	node scripts/docs-build.js {} \;
 
-docs: $(mandocs) htmldocs
+docs: mandocs htmldocs
 
 markedclean:
 	rm -rf node_modules/marked node_modules/.bin/marked .building_marked
