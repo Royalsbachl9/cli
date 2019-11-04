@@ -79,9 +79,11 @@ async function measureAction ({ cmd, args, env, cwd }) {
 
 /**
  * NOTE: Scenario Ordering
- * The order of the scenarios is important because of cache and node_modules
- * hydration. If each scenario started fresh, we'd have to prep each one.
- * This sort of funtionality is prefered but not created yet.
+ * The first scenario needs to be an "initial install" to populate the cache,
+ * node_modules folder, and create a lockfile. All the subsequent scenarios
+ * can be in any order. As a subsequent scenario starts with populated cache,
+ * node_modules folder, and lockfile (created from the previous scenario),
+ * they mearly need to remove the idea they do not want.
  */
 module.exports = [
   {
