@@ -38,10 +38,7 @@
     "develop": "gatsby develop",
     "start": "npm run develop",
     "build": "gatsby build",
-    "build:clean": "rm -rf node_modules .cache public/*js public/*json public/404* public/page-data public/manifest*",
-    "prebuild:static": "rm -rf public && npm i",
     "build:static": "GATSBY_IS_STATIC=true gatsby build --prefix-paths",
-    "postbuild:static": "npm run build:clean",
     "serve": "gatsby serve"
   }
 }
