@@ -1,12 +1,12 @@
 'use strict'
 
-// const { join } = require('path')
+const { join } = require('path')
 const fs = require('fs')
 
 const { log } = require('./utils')
 
 // Constant Variables
-const { FIXTURES_DIR } = require('./constants')
+const { FIXTURES_DIR, RESULTS_DIR, VERSION } = require('./constants')
 
 /**
  * // Scenario Object
@@ -40,27 +40,65 @@ async function executeScenario (scenario, fixture) {
   )
   log.info('execute', 'Result Time: %d', result)
   log.info('execute', 'Details: %o', scenario.details)
+  return result
 }
 
 async function execute () {
   // Execute scenarios
   const scenarios = require('./scenarios')
-  const fixtures = fs.readdirSync(FIXTURES_DIR, 'utf-8')
+  const fixtures = fs.readdirSync(FIXTURES_DIR, 'utf8')
 
   try {
+    const newResults = {}
     for (let x = 0; x < scenarios.length; ++x) {
       const scenario = scenarios[x]
+
+      const scenarioKey = scenario.name.toLowerCase()
+      if (scenarioKey !== 'cleanup') {
+        newResults[scenarioKey] = {}
+      }
 
       log.info('scenario', scenario.name)
       for (let i = 0; i < fixtures.length; ++i) {
         const fixture = fixtures[i]
 
         log.info('fixture', fixture)
-        await executeScenario(scenario, fixture)
+        const execResult = await executeScenario(scenario, fixture)
+
+        const fixtureKey = fixture.toLowerCase()
+        if (newResults[scenarioKey]) {
+          newResults[scenarioKey][fixtureKey] = execResult
+        }
       }
     }
+    const prevResults = safeLoadResults()
+    const results = [...prevResults, newResults]
+    writeResults(results)
   } catch (e) {
     log.error(e)
+  }
+}
+
+function writeResults (results) {
+  const filepath = join(RESULTS_DIR, `${VERSION}.json`)
+  try {
+    const data = JSON.stringify(results, null, '  ')
+    fs.writeFileSync(filepath, data)
+  } catch (err) {
+    throw err
+  }
+}
+
+function safeLoadResults () {
+  const filepath = join(RESULTS_DIR, `${VERSION}.json`)
+  try {
+    const file = fs.readFileSync(filepath, 'utf8')
+    return (file) ? JSON.parse(file) : []
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err
+    }
+    return []
   }
 }
 
