@@ -35,6 +35,25 @@ async function removePath (path) {
   })
 }
 
+async function measureAction ({ cmd, args, env, cwd }) {
+  log.verbose('measureAction', 'executing...')
+  log.silly('measureAction', 'cmd: %s', cmd) // TESTING
+  log.silly('measureAction', 'args: %o', args) // TESTING
+  log.silly('measureAction', 'env: %o', env) // TESTING
+  log.silly('measureAction', 'cwd: %s', cwd) // TESTING
+  const startTime = Date.now()
+
+  // TODO: allow config to be passed in to allow process output 'stdio'
+  const result = child.spawnSync(cmd, args, { env, cwd })
+  if (result.status !== 0) {
+    console.error(result.error)
+    throw new Error(`${cmd} failed with status code ${result.status}`)
+  }
+  const endTime = Date.now()
+  return endTime - startTime
+}
+
+// Action Helper Functions
 async function removeCache (ctx, fixture) {
   log.verbose('removeCache', 'removing cache...')
   const cacheDir = join(FIXTURES_DIR, fixture, CACHE_NAME)
@@ -57,24 +76,6 @@ async function removeLockfile (ctx, fixture) {
   const lockfilePath = join(cwd, 'package-lock.json')
   log.silly('removeLockfile', 'lockfilePath: %s', lockfilePath)
   return removePath(lockfilePath)
-}
-
-async function measureAction ({ cmd, args, env, cwd }) {
-  log.verbose('measureAction', 'executing...')
-  log.silly('measureAction', 'cmd: %s', cmd) // TESTING
-  log.silly('measureAction', 'args: %o', args) // TESTING
-  log.silly('measureAction', 'env: %o', env) // TESTING
-  log.silly('measureAction', 'cwd: %s', cwd) // TESTING
-  const startTime = Date.now()
-
-  // TODO: allow config to be passed in to allow process output 'stdio'
-  const result = child.spawnSync(cmd, args, { env, cwd })
-  if (result.status !== 0) {
-    console.error(result.error)
-    throw new Error(`${cmd} failed with status code ${result.status}`)
-  }
-  const endTime = Date.now()
-  return endTime - startTime
 }
 
 /**
