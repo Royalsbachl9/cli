@@ -9,24 +9,17 @@ const { log } = require('./utils')
 const { FIXTURES_DIR, RESULTS_DIR, VERSION } = require('./constants')
 
 /**
- * // Scenario Object
- * {
- *    pmName: 'npm',
- *    fixtures: 'path/to/fixtures/dir',
- * }
- */
-
-// module.exports.benchmark = async function benchmark (scenario, fixture, opts) {
-//   // Create 'current working directory'
-//   const cwd = path.join(TMP_DIR, scenario.pmName, scenario.fixture)
-//   // Copy fixtures into temp directory
-//   await copy(path.join(FIXTURES_DIR, fixture), cwd)
-// }
-
-/**
  * Executes a given scenario with a provided fixture
  *
- * @param {object} scenario scenario object
+ * @param {Object} scenario scenario object
+ * @param {string} scenario.name name of the scenario
+ * @param {object} scenario.details details about scenario
+ * @param {boolean} scenario.details.cache
+ * @param {boolean} scenario.details.node_modules
+ * @param {boolean} scenario.details.lockfile
+ * @param {string} scenario.cmd command used by the scenario
+ * @param {string[]} scenario.args list of arguments to pass to the command
+ * @param {function[]} scenario.actions list of actions this scenario will take
  * @param {string} fixture directory name of a fixture
  */
 async function executeScenario (scenario, fixture) {
