@@ -66,8 +66,7 @@ async function measureAction ({ cmd, args, env, cwd }) {
   log.silly('measureAction', 'env: %o', env) // TESTING
   log.silly('measureAction', 'cwd: %s', cwd) // TESTING
   const startTime = Date.now()
-  // const delay = (ms, value) => new Promise(resolve => setTimeout(() => resolve(value), ms))
-  // await delay(1000)
+
   // TODO: allow config to be passed in to allow process output 'stdio'
   const result = child.spawnSync(cmd, args, { env, cwd })
   if (result.status !== 0) {
